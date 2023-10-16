@@ -15,8 +15,8 @@
 *****************************************************************************************
 '''
 
-# Team ID:			[ Team-ID ]
-# Author List:		[ Names of team members worked on this file separated by Comma: Name1, Name2, ... ]
+# Team ID:			[ GG_1194 ]
+# Author List:		[Keshav Joshi, Ashish Rathore, Disha Chhabra, Dev Goyal]
 # Filename:			task_2a.py
 # Functions:		detect_ArUco_details
 # 					[ Comma separated list of functions in this file ]
