@@ -22,23 +22,63 @@ enum Detected {
   allThreeLine
 };
 
-// enum Motion {
-//   forward,
-//   left,
-//   right,
-//   stop  // You can add more directions as needed
-// };
+enum Motion {
+  forward,
+  left,
+  right,
+  stop  
+};
 
-// int completePath [12]={}
+const char* detectedStrings[] = {
+  "centerOfLine",
+  "leftOfLine",
+  "rightOfLine",
+  "node",
+  "bothSideLine",
+  "sideRightLine",
+  "sideLeftLine",
+  "allThreeLine"
+};
 
-// // Assuming myArray is a three-dimensional array
-// Motion myArray[12][12][12];
+const char* motionStrings[] = {
+  "forward",
+  "left",
+  "right",
+  "stop"
+};
 
-// // Function to get the value from myArray based on three indexes
-// Motion getMyArrayValue(int prevNode, int currentNode, int nextNode) {
-//     return myArray[index1][index2][index3];
-// }
 
+
+Motion movement;
+int prevNode = 0; 
+int currentNode = 0;
+int nextNode = 1;
+bool isTurning = false;
+int pathIndex=2;
+
+int completePath [13]={0,1,2,3,6,5,9,10,11,7,2,1,0};
+
+// Assuming myArray is a three-dimensional array
+Motion myArray[12][12][12];
+
+Motion determineMotion(Detected detect){
+  Motion moveOnLine;
+
+  if (detect == centerOfLine || detect == bothSideLine || detect == allThreeLine) {
+    moveOnLine = forward;
+
+} else if (detect == leftOfLine || detect == sideLeftLine ) {
+    moveOnLine = left;
+
+} else if (detect == rightOfLine || detect == sideRightLine ) {
+    moveOnLine = right;
+
+} else if (detect == node) {
+    moveOnLine = stop;
+    
+}  return moveOnLine;
+
+}
 
 // Function to determine detected position based on sensor readings
 Detected determinePosition(bool sideLeftSensor, bool leftSensor, bool centerSensor, bool rightSensor, bool sideRightSensor) {
@@ -99,91 +139,37 @@ void setup() {
   pinMode(RIGHT_MOTOR_IN3, OUTPUT);
   pinMode(RIGHT_MOTOR_IN4, OUTPUT);
 
-  //Setting direction for bot
 
-  
-// myArray[0][1][2]='f';
+//Setting direction for bot
 
-// myArray[2][1][0]='f';
+myArray[0][0][1]=forward;
 
-// myArray[1][2][3]='f';
+myArray[0][1][2]=forward; myArray[2][1][0]=forward; myArray[0][1][8]=right; myArray[8][1][0]=left;
 
-// myArray[3][2][1]='f';
+myArray[1][2][3]=forward; myArray[3][2][1]=forward; myArray[1][2][7]=right; myArray[7][2][1]=left;
+myArray[1][2][7]=right; myArray[7][2][1]=left;
 
-// myArray[2][3][4]='f';
+myArray[6][3][4]=right; myArray[4][3][6]=left;
+myArray[2][3][4]=forward; myArray[4][3][2]=forward; myArray[2][3][6]=right; myArray[6][3][2]=left;
 
-// myArray[4][3][2]='f';
+myArray[3][4][5]=right; myArray[5][4][3]=left; myArray[3][4][9]=forward; myArray[9][4][3]=forward;
 
-// myArray[0][1][8]='r';
+myArray[4][5][6]=right; myArray[6][5][4]=left; myArray[9][5][6]=left; myArray[6][5][9]=right;
 
-// myArray[8][1][0]='l';
+myArray[3][6][7]=right; myArray[7][6][3]=left; myArray[5][6][7]=forward; myArray[7][6][5]=forward; myArray[3][6][5]=left; myArray[5][6][3]=right; 
+myArray[10][6][7]=left; myArray[10][6][5]=right; myArray[7][6][10]=right; myArray[5][6][10]=left; myArray[3][6][10]=forward; myArray[10][6][3]=forward;
 
-// myArray[1][2][7]='r';
+myArray[2][7][8]=right; myArray[11][7][8]=left; myArray[2][7][11]=forward; myArray[6][7][8]=forward; myArray[11][7][6]=right; myArray[2][7][6]=left;
+myArray[8][7][2]=left; myArray[8][7][11]=right; myArray[11][7][2]=forward; myArray[8][7][6]=forward; myArray[6][7][11]=left; myArray[6][7][2]=right;
 
-// myArray[7][2][1]='l';
+myArray[1][8][7]= left ; myArray[7][8][1]=right; myArray[11][8][7]=right; myArray[7][8][11]=left; myArray[1][8][11]=forward; myArray[11][8][1]=forward; 
 
-// myArray[2][3][6]='r';
+myArray[4][9][10]=forward; myArray[10][9][4]=forward; myArray[5][9][4]=left; myArray[4][9][5]=right; myArray[5][9][10]=right; myArray[10][9][5]=left;
 
-// myArray[6][3][2]='l';
+myArray[9][10][11]=forward; myArray[9][10][6]=right; myArray[6][10][11]=right; myArray[11][10][9]=forward; myArray[6][10][9]=left; myArray[11][10][6]=left;
+myArray[9][10][11]=forward; myArray[9][10][6]=right; myArray[6][10][11]=right; myArray[11][10][9]=forward; myArray[6][10][9]=left; myArray[11][10][6]=left;
 
-// myArray[3][4][5]='r';
-
-// myArray[5][4][3]='l';
-
-// myArray[4][5][6]='r';
-
-// myArray[6][5][4]='l';
-
-// myArray[9][5][6]='l';
-
-// myArray[6][5][9]='r';
-
-// myArray[3][6][7]='r';
-
-// myArray[7][6][3]='l';
-
-// myArray[5][6][7]='f';
-
-// myArray[7][6][5]='f';
-
-// myArray[3][6][5]='l';
-
-// myArray[5][6][3]='r';
-
-// myArray[10][6][7]='l';
-
-// myArray[10][6][5]='r';
-
-// myArray[7][6][10]='r';
-
-// myArray[5][6][10]='l';
-
-// myArray[3][6][10]='f';
-
-// myArray[10][6][3]='f';
-
-// myArray[3][4][9]='f';
-
-// myArray[9][4][3]='f';
-
-// myArray[2][7][8]='r'; myArray[11][7][8]='l'; myArray[2][7][11]='f'; myArray[6][7][8]='f'; myArray[11][7][6]='r'; myArray[2][7][6]='l';
-
-// myArray[8][7][2]='l'; myArray[8][7][11]='r'; myArray[11][7][2]='f'; myArray[8][7][6]='f'; myArray[6][7][11]='l'; myArray[6][7][2]='r';
-
-// myArray[1][8][7]='left'; myArray[7][8][1]='r'; myArray[11][8][7]='r'; myArray[7][8][11]='l'; myArray[1][8][11]='f'; myArray[11][8][1]='f'; 
-
-// myArray[4][9][10]='f'; myArray[10][9][4]='f'; myArray[5][9][4]='l'; myArray[4][9][5]='r'; myArray[5][9][10]='r'; myArray[10][9][5]='l';
-
-// myArray[9][10][11]='f'; myArray[9][10][6]='r'; myArray[6][10][11]='r'; myArray[11][10][9]='f'; myArray[6][10][9]='l'; myArray[11][10][6]='l';
-
-// myArray[9][10][11]='f'; myArray[9][10][6]='r'; myArray[6][10][11]='r'; myArray[11][10][9]='f'; myArray[6][10][9]='l'; myArray[11][10][6]='l';
-
-// myArray[7][11][8]='r'; myArray[8][11][7]='l'; myArray[10][11][8]='f'; myArray[8][11][10]='f'; myArray[10][11][7]='r'; myArray[7][11][10]='l';
-
-// myArray[1][2][7]='r'; myArray[7][2][1]='l';
-
-// myArray[6][3][4]='r'; myArray[4][3][6]='l';
-
+myArray[7][11][8]=right; myArray[8][11][7]=left; myArray[10][11][8]=forward; myArray[8][11][10]=forward; myArray[10][11][7]=right; myArray[7][11][10]=left;
 }
 
 void loop() {
@@ -194,26 +180,46 @@ void loop() {
   bool sideRightSensor = digitalRead(SIDE_RIGHT);
 
   Detected detected = determinePosition(sideLeftSensor, leftSensor, centerSensor, rightSensor, sideRightSensor);
-  Serial.println(detected);
 
-  switch (detected) {
-    case centerOfLine:
-      // Perform forward motion action
-      digitalWrite(LEFT_MOTOR_IN1, HIGH);
-      digitalWrite(LEFT_MOTOR_IN2, LOW);
-      digitalWrite(RIGHT_MOTOR_IN3, HIGH);
-      digitalWrite(RIGHT_MOTOR_IN4, LOW);
-      break;
-    
-    case bothSideLine:
-      // Perform forward motion action
-      digitalWrite(LEFT_MOTOR_IN1, HIGH);
-      digitalWrite(LEFT_MOTOR_IN2, LOW);
-      digitalWrite(RIGHT_MOTOR_IN3, HIGH);
-      digitalWrite(RIGHT_MOTOR_IN4, LOW);
-      break;
-    
-    case allThreeLine:
+  Motion moveOnLine = determineMotion(detected);
+
+  if(isTurning==false){
+    movement = moveOnLine;
+  }
+
+  if (detected==node && isTurning==false) {
+    movement = forward;
+    delay(800);
+    isTurning = true;
+    // movement=myArray[prevNode][currentNode][nextNode];
+  }
+
+  if(isTurning && detected == centerOfLine) {
+    isTurning = false;
+    prevNode = currentNode; 
+    currentNode = nextNode;
+    nextNode = completePath[pathIndex];
+    pathIndex++;
+  }
+
+  if(isTurning) {
+    movement=myArray[prevNode][currentNode][nextNode];
+  }
+
+
+  Serial.print(prevNode);
+  Serial.print(currentNode);
+  Serial.println(nextNode);
+  Serial.println(isTurning);
+  Serial.print("Detected: ");
+  Serial.println(detectedStrings[detected]);
+  Serial.print("Movement: ");
+  Serial.println(motionStrings[movement]);
+  delay(200);
+
+
+  switch (movement) {
+    case forward:
       // Perform forward motion action
       digitalWrite(LEFT_MOTOR_IN1, HIGH);
       digitalWrite(LEFT_MOTOR_IN2, LOW);
@@ -221,39 +227,23 @@ void loop() {
       digitalWrite(RIGHT_MOTOR_IN4, LOW);
       break;
 
-    case leftOfLine:
-      // Perform right motion action
+    case left:
+      // Perform left motion action
       digitalWrite(LEFT_MOTOR_IN1, LOW);
-      digitalWrite(LEFT_MOTOR_IN2, LOW);
+      digitalWrite(LEFT_MOTOR_IN2, HIGH);
       digitalWrite(RIGHT_MOTOR_IN3, HIGH);
       digitalWrite(RIGHT_MOTOR_IN4, LOW);
       break;
 
-    case sideLeftLine:
+    case right:
       // Perform right motion action
       digitalWrite(LEFT_MOTOR_IN1, HIGH);
       digitalWrite(LEFT_MOTOR_IN2, LOW);
       digitalWrite(RIGHT_MOTOR_IN3, LOW);
-      digitalWrite(RIGHT_MOTOR_IN4, LOW);
+      digitalWrite(RIGHT_MOTOR_IN4, HIGH);
       break;
 
-    case rightOfLine:
-      // Perform right motion action
-      digitalWrite(LEFT_MOTOR_IN1, HIGH);
-      digitalWrite(LEFT_MOTOR_IN2, LOW);
-      digitalWrite(RIGHT_MOTOR_IN3, LOW);
-      digitalWrite(RIGHT_MOTOR_IN4, LOW);
-      break;
-    
-    case sideRightLine:
-      // Perform right motion action
-      digitalWrite(LEFT_MOTOR_IN1, LOW);
-      digitalWrite(LEFT_MOTOR_IN2, LOW);
-      digitalWrite(RIGHT_MOTOR_IN3, HIGH);
-      digitalWrite(RIGHT_MOTOR_IN4, LOW);
-      break;
-
-    case node:
+    case stop:
       // Perform stop motion action
       digitalWrite(LEFT_MOTOR_IN1, LOW);
       digitalWrite(LEFT_MOTOR_IN2, LOW);
